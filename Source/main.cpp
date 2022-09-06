@@ -27,15 +27,15 @@ color ColorRay(const ray& r) {
 // This function finds the roots(t) of this ray-sphere intersection equation
 double isHitSphere(const point3& center, double radius, const ray& r) {
 	vec3 oc = r.origin() - center;
-	auto a = dot(r.direction(), r.direction()); //r*r
-	auto b = 2.0 * dot(oc, r.direction());
-	auto c = dot(oc, oc) - radius * radius;
-	auto discriminant = b * b - 4 * a * c;
+	auto a = r.direction().length_squared(); //r*r
+	auto half_b = dot(oc, r.direction());
+	auto c = oc.length_squared() - radius * radius;
+	auto discriminant = half_b * half_b - a * c;
 	if (discriminant < 0) { // means no roots
 		return -1.0;
 	}
 	else { // means that equation has at least 2 roots
-		return (-b - sqrt(discriminant)) / (2.0 * a); // the root t
+		return (-half_b - sqrt(discriminant)) / a; // the root t
 	}
 }
 

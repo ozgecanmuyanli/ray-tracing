@@ -1,14 +1,34 @@
-#include <iostream>
+﻿#include <iostream>
 #include "color.h"
 #include "vec3.h"
 #include "ray.h"
 
+// FUCNTIONS
+bool isHitSphere(const point3& center, double radius, const ray& r);
+color ColorRay(const ray& r);
+
 // If there is no object in the scene, then the ray color is used to colorize pixels.
 // In other words; it is background color.
-color ray_color(const ray& r) {
+color ColorRay(const ray& r) {
+	auto sphereCenter = point3(0, 0, -1);
+	double sphereRadius = 0.5;
+	if (isHitSphere(sphereCenter, sphereRadius, r))
+		return color(121.0/255.0, 16.0/255.0, 97.0/255.0);
 	vec3 unit_direction = unit_vector(r.direction());
 	auto t = 0.5 * (unit_direction.y() + 1.0);
 	return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
+}
+
+// (P-C)*(P-C) = r*r, P(t) = A + tb so
+// t2b⋅b+2tb⋅(A−C)+(A−C)⋅(A−C)−r2=0
+// This function finds the roots(t) of this ray-sphere intersection equation
+bool isHitSphere(const point3& center, double radius, const ray& r) {
+	vec3 oc = r.origin() - center;
+	auto a = dot(r.direction(), r.direction()); //r*r
+	auto b = 2.0 * dot(oc, r.direction());
+	auto c = dot(oc, oc) - radius * radius;
+	auto discriminant = b * b - 4 * a * c;
+	return (discriminant > 0); // means that equation has at least 2 roots
 }
 
 int main()
@@ -38,7 +58,7 @@ int main()
 			auto u = double(i) / (image_width - 1);
 			auto v = double(j) / (image_height - 1);
 			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
-			color pixel_color = ray_color(r);
+			color pixel_color = ColorRay(r);
 			write_color(std::cout, pixel_color);
 		}
 	}

@@ -4,7 +4,7 @@
 #include "ray.h"
 
 // FUCNTIONS
-bool isHitSphere(const point3& center, double radius, const ray& r);
+double isHitSphere(const point3& center, double radius, const ray& r);
 color ColorRay(const ray& r);
 
 // If there is no object in the scene, then the ray color is used to colorize pixels.
@@ -12,23 +12,31 @@ color ColorRay(const ray& r);
 color ColorRay(const ray& r) {
 	auto sphereCenter = point3(0, 0, -1);
 	double sphereRadius = 0.5;
-	if (isHitSphere(sphereCenter, sphereRadius, r))
-		return color(121.0/255.0, 16.0/255.0, 97.0/255.0);
+	auto t = isHitSphere(sphereCenter, sphereRadius, r);
+	if (t > 0.0) {
+		vec3 N = unit_vector(r.at(t) - vec3(sphereCenter)); //normal vector = (P-C)
+		return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+	}
 	vec3 unit_direction = unit_vector(r.direction());
-	auto t = 0.5 * (unit_direction.y() + 1.0);
+	t = 0.5 * (unit_direction.y() + 1.0);
 	return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 
 // (P-C)*(P-C) = r*r, P(t) = A + tb so
 // t2b⋅b+2tb⋅(A−C)+(A−C)⋅(A−C)−r2=0
 // This function finds the roots(t) of this ray-sphere intersection equation
-bool isHitSphere(const point3& center, double radius, const ray& r) {
+double isHitSphere(const point3& center, double radius, const ray& r) {
 	vec3 oc = r.origin() - center;
 	auto a = dot(r.direction(), r.direction()); //r*r
 	auto b = 2.0 * dot(oc, r.direction());
 	auto c = dot(oc, oc) - radius * radius;
 	auto discriminant = b * b - 4 * a * c;
-	return (discriminant > 0); // means that equation has at least 2 roots
+	if (discriminant < 0) { // means no roots
+		return -1.0;
+	}
+	else { // means that equation has at least 2 roots
+		return (-b - sqrt(discriminant)) / (2.0 * a); // the root t
+	}
 }
 
 int main()

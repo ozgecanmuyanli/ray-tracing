@@ -20,7 +20,7 @@ color ColorRay(const ray& r, const hittable& world, int depth) {
 
 	if (world.hit(r, 0, infinity, rec)) {
 		point3 target = rec.p + rec.normal + random_in_unit_sphere();
-		return 0.5 * ColorRay(ray(rec.p, target - rec.p), world, depth-1);
+		return 0.5 * ColorRay(ray(rec.p, target - rec.p), world, depth - 1);
 	}
 	vec3 unit_direction = unit_vector(r.direction());
 	auto t = 0.5 * (unit_direction.y() + 1.0);
@@ -34,7 +34,7 @@ int main()
 	const int image_width = 400;
 	const int image_height = static_cast<int>(image_width / aspect_ratio);
 	const int samples_per_pixel = 100;
-	const int max_depth = 50;
+	const int max_depth = 100;
 
 	// World
 	hittable_list world;

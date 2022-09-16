@@ -54,8 +54,8 @@ int main()
 	world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
 
 	// Camera
-	// (-2, 1, -1): left-top corner, (2, -1, -1): right-bottom corner
-	camera cam;
+	// lookfrom, lookat, vup, vfov(degree), aspect_ratio
+	camera cam(point3(-2, 2, 1), point3(0, 0, -1), vec3(0, 1, 0), 80, aspect_ratio);
 
 	// MAIN RENDER LOOP
 	// Create ppm format file, image
